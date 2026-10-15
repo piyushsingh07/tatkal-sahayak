@@ -1,0 +1,16 @@
+{
+  "name": "tatkal-sahayak",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Personal-use IRCTC Tatkal booking assist (Chrome MV3 extension). Dev tooling only — the extension itself has no build step.",
+  "scripts": {
+    "test": "node --test --test-force-exit --test-timeout=40000 test/*.test.js",
+    "test:e2e": "node --test --test-force-exit --test-timeout=150000 test/e2e/extension.e2e.test.js",
+    "test:all": "npm test && npm run test:e2e",
+    "mock": "node test/e2e/mock-server.js",
+    "check": "for f in $(find src -name '*.js'); do node --check \"$f\" || exit 1; done && node -e \"JSON.parse(require('fs').readFileSync('manifest.json','utf8'))\" && echo syntax-ok"
+  },
+  "devDependencies": {
+    "jsdom": "30.1.1"
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "manifest_version": 3,
+  "name": "Tatkal Sahayak (IRCTC personal assist)",
+  "version": "0.1.0",
+  "description": "Personal-use IRCTC helper: instant re-login fill, search/train/passenger autofill and a precisely timed Book Now. CAPTCHA, Aadhaar OTP and payment always stay manual.",
+  "minimum_chrome_version": "116",
+  "permissions": ["storage"],
+  "host_permissions": [
+    "https://www.irctc.co.in/*",
+    "https://timeapi.io/*"
+  ],
+  "background": {
+    "service_worker": "src/background.js"
+  },
+  "action": {
+    "default_title": "Tatkal Sahayak — open settings"
+  },
+  "options_ui": {
+    "page": "src/options/options.html",
+    "open_in_tab": true
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://www.irctc.co.in/*"],
+      "run_at": "document_idle",
+      "js": [
+        "src/shared/time.js",
+        "src/shared/storage.js",
+        "src/shared/crypto.js",
+        "src/content/dom.js",
+        "src/content/profiles.js",
+        "src/content/steps.js",
+        "src/content/engine.js",
+        "src/content/panel.js",
+        "src/content/main.js"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Tatkal Sahayak — Settings</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <header>
+    <h1>Tatkal Sahayak <small>personal IRCTC booking assist</small></h1>
+    <p class="risk">
+      IRCTC's terms prohibit automation/scripting tools and allow IRCTC to deactivate the user ID and cancel tickets
+      without refund. This tool only pre-fills forms for <b>your own</b> booking; CAPTCHA, Aadhaar OTP and payment are
+      always done by you. Use at your own risk, never for agents/bulk booking.
+    </p>
+  </header>
+
+  <main>
+    <form id="form" autocomplete="off">
+      <section>
+        <h2>1. IRCTC login</h2>
+        <div class="grid">
+          <label>User ID <input name="credentials.userId" required></label>
+          <label>Password <input name="credentials.password" type="password" placeholder="leave blank to keep the saved one"></label>
+          <label>Passphrase (optional, encrypts the saved password)
+            <input name="passphrase" type="password" placeholder="you will type this in the panel to unlock">
+          </label>
+        </div>
+        <p class="hint" id="credStatus"></p>
+      </section>
+
+      <section>
+        <h2>2. Journey</h2>
+        <div class="grid">
+          <label>From (station code) <input name="journey.from" placeholder="NDLS" maxlength="5" style="text-transform:uppercase"></label>
+          <label>To (station code) <input name="journey.to" placeholder="BPL" maxlength="5" style="text-transform:uppercase"></label>
+          <label>Date of journey <input name="journey.date" type="date"></label>
+          <label>Train number <input name="journey.trainNo" placeholder="12002" maxlength="5" inputmode="numeric"></label>
+          <label>Class <select name="journey.cls" id="clsSelect"></select></label>
+          <label>Quota <select name="journey.quota" id="quotaSelect"></select></label>
+          <label>Boarding station (optional) <input name="journey.boardingStation" maxlength="5" style="text-transform:uppercase"></label>
+        </div>
+        <p class="hint">Tatkal opens the day before the train's <em>origin</em> departure — 10:00 IST for AC classes, 11:00 IST for non-AC. Max 4 passengers per Tatkal ticket.</p>
+      </section>
+
+      <section>
+        <h2>3. Passengers</h2>
+        <table id="paxTable">
+          <thead><tr><th>Name</th><th>Age</th><th>Gender</th><th>Berth</th><th>Food</th><th></th></tr></thead>
+          <tbody></tbody>
+        </table>
+        <button type="button" id="addPax" class="secondary">+ Add passenger</button>
+
+        <h3>Infants (under 5, no berth)</h3>
+        <table id="infTable">
+          <thead><tr><th>Name</th><th>Age</th><th>Gender</th><th></th></tr></thead>
+          <tbody></tbody>
+        </table>
+        <button type="button" id="addInf" class="secondary">+ Add infant</button>
+
+        <div class="grid" style="margin-top:12px">
+          <label>Mobile number <input name="contact.mobile" maxlength="10" inputmode="numeric"></label>
+          <label>Preferred coach (optional) <input name="preferences.coachPreference" placeholder="e.g. B3"></label>
+        </div>
+        <div class="checks">
+          <label><input type="checkbox" name="preferences.autoUpgrade"> Consider for auto upgradation</label>
+          <label><input type="checkbox" name="preferences.confirmBerthsOnly"> Book only if confirm berths are allotted</label>
+          <label>Travel insurance
+            <select name="preferences.travelInsurance">
+              <option value="no">No</option><option value="yes">Yes</option><option value="skip">Don't touch</option>
+            </select>
+          </label>
+        </div>
+      </section>
+
+      <section>
+        <h2>4. Payment</h2>
+        <div class="grid">
+          <label>Method
+            <select name="payment.method">
+              <option value="UPI">BHIM / UPI (QR on gateway page)</option>
+              <option value="EWALLET">IRCTC eWallet</option>
+              <option value="CARDS">Cards / Net banking (stop on gateway page)</option>
+              <option value="MANUAL">Manual — do nothing on the payment page</option>
+            </select>
+          </label>
+          <label>Gateway match (regex) <input name="payment.gatewayRegex" placeholder="paytm|phonepe|bhim|upi"></label>
+        </div>
+        <div class="checks">
+          <label><input type="checkbox" name="payment.autoPayAndBook"> Click "Pay &amp; Book" automatically (payment itself is still approved by you)</label>
+        </div>
+      </section>
+
+      <section>
+        <h2>5. Timing &amp; automation</h2>
+        <div class="grid">
+          <label>Book Now at (IST, HH:MM:SS) <input name="automation.targetTime" placeholder="10:00:00 — blank = immediately"></label>
+          <label>Click offset after boundary (ms) <input name="automation.clickOffsetMs" type="number" min="0" max="5000"></label>
+          <label>Captcha auto-submit after N chars (0 = off) <input name="automation.captchaAutoSubmitLength" type="number" min="0" max="10"></label>
+          <label>Re-login cooldown (ms) <input name="automation.reloginCooldownMs" type="number" min="1000" max="60000"></label>
+          <label>Max re-logins per run <input name="automation.maxRelogins" type="number" min="1" max="50"></label>
+          <label>Book Now retries (1/sec) <input name="automation.bookNowRetries" type="number" min="1" max="60"></label>
+        </div>
+        <div class="checks">
+          <label><input type="checkbox" name="automation.reloginEnabled"> Re-fill login instantly whenever the login modal appears</label>
+          <label><input type="checkbox" name="automation.autoSubmitLogin"> Click Sign In automatically when the login form has no captcha</label>
+          <label><input type="checkbox" name="automation.autoContinueReview"> On the review page, click Continue when there is no captcha/OTP</label>
+          <label><input type="checkbox" name="automation.autoAcceptPopup"> Auto-click OK on IRCTC's confirmation popup after Book Now</label>
+          <label><input type="checkbox" name="automation.selectClassInSearch"> Also pick the class in the search form (applies IRCTC's "Journey Class" filter — normally leave off)</label>
+        </div>
+      </section>
+
+      <section>
+        <h2>6. Selector overrides <small>(captured with the Pick tool)</small></h2>
+        <textarea name="selectorsOverride" rows="6" spellcheck="false"></textarea>
+        <p class="hint">JSON: <code>{"nget": {"field.key": "css"}, "eticket": {...}}</code>. Clear a site's object to go back to the built-in locators.</p>
+      </section>
+
+      <div class="actions">
+        <button type="submit" class="primary">Save settings</button>
+        <button type="button" id="exportBtn" class="secondary">Export JSON</button>
+        <label class="secondary btn-like">Import JSON <input type="file" id="importFile" accept="application/json" hidden></label>
+        <button type="button" id="clearPw" class="danger">Forget password</button>
+      </div>
+      <div id="messages"></div>
+    </form>
+
+    <section class="help">
+      <h2>How to use on Tatkal day</h2>
+      <ol>
+        <li><b>The day before:</b> fill everything here, open irctc.co.in, press <b>Field check</b> in the panel on each page and fix any red field with <b>Pick</b>. Run a <b>Dry run</b> with General quota to watch it fill the passenger form (it stops before Continue).</li>
+        <li><b>09:50</b> — open the IRCTC tab, log in yourself, keep the tab visible (background tabs get throttled). Press <b>Arm (live)</b>. The panel syncs the clock.</li>
+        <li>The extension searches, opens your train, selects the class and waits for 10:00:00 (+offset) to click Book Now, then fills passengers → Continue.</li>
+        <li><b>You:</b> type captchas, enter the Aadhaar OTP, scan the UPI QR. If IRCTC logs you out at any point, the login form is refilled instantly — you type the captcha and press Enter, and the flow resumes where it was.</li>
+      </ol>
+    </section>
+  </main>
+
+  <script src="../shared/time.js"></script>
+  <script src="../shared/storage.js"></script>
+  <script src="../shared/crypto.js"></script>
+  <script src="options.js"></script>
+</body>
+</html>
